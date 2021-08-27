@@ -1,14 +1,20 @@
 import { Box, Typography } from '@material-ui/core';
 import { ChevronLeft } from '@material-ui/icons';
-import { apiGetStudentsById } from 'api/studentApi';
+import {
+  apiAddStudent,
+  apiGetStudentsById,
+  apiUpdateStudent,
+} from 'api/studentApi';
 import { Student } from 'models';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import StudentForm from '../components/StudentForm';
+import { toast } from 'react-toastify';
 
 const AddEditPage = () => {
   const { studentId } = useParams<{ studentId: string }>();
   const [student, setStudent] = useState<Student>();
+  const history = useHistory();
 
   useEffect(() => {
     if (!studentId) return;
@@ -25,8 +31,6 @@ const AddEditPage = () => {
     })();
   }, [studentId]);
 
-  console.log('found stu', student);
-
   const initialValue: Student = {
     name: '',
     age: '',
@@ -36,7 +40,17 @@ const AddEditPage = () => {
     ...student,
   } as Student;
 
-  const handleStudentSubmitForm = () => {};
+  const handleStudentSubmitForm = async (student: Student) => {
+    if (!!studentId) {
+      await apiUpdateStudent(student);
+    } else {
+      await apiAddStudent(student);
+    }
+
+    toast.success('Save data successfully!');
+
+    history.push('/admin/students');
+  };
 
   return (
     <Box>

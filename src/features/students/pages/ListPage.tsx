@@ -21,6 +21,7 @@ import {
   selectPagination,
   studentAction,
 } from '../studentSlice';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,6 +79,7 @@ const ListPage = () => {
   const handleDeleteStudent = async (student: Student) => {
     try {
       await apiRemoveStudent(student.id || '');
+      toast.success('Remove student successfully!');
 
       const newFilter: ListParams = { ...filter };
 

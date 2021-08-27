@@ -8,6 +8,8 @@ import App from './App';
 import { store } from './app/store';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,6 +17,17 @@ ReactDOM.render(
       <ConnectedRouter history={history}>
         <CssBaseline />
         <App />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </ConnectedRouter>
     </Provider>
   </React.StrictMode>,

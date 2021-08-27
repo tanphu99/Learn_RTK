@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, CircularProgress } from '@material-ui/core';
 import { useAppSelector } from 'app/hooks';
 import {
   InputField,
@@ -11,10 +11,11 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { Alert } from '@material-ui/lab';
 
 export interface StudentFormProps {
   initialValue: Student;
-  onSubmit: () => void;
+  onSubmit: (student: Student) => void;
 }
 
 const schema = yup.object().shape({
@@ -53,12 +54,21 @@ export default function StudentForm({
   onSubmit,
 }: StudentFormProps) {
   const cityOption = useAppSelector(selectCityOption);
+  const [error, setError] = React.useState<string>('');
 
-  const handleFormSubmit = (student: Student) => {
-    console.log('Student info', student);
+  const handleFormSubmit = async (student: Student) => {
+    try {
+      await onSubmit?.(student);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
     defaultValues: initialValue,
     resolver: yupResolver(schema),
   });
@@ -68,7 +78,6 @@ export default function StudentForm({
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         {/* FORM FIELD */}
         <InputField name="name" control={control} label="Full Name" />
-
         <RadioGroupField
           name="gender"
           control={control}
@@ -78,7 +87,6 @@ export default function StudentForm({
             { label: 'Female', value: 'female' },
           ]}
         />
-
         <InputField name="age" control={control} label="Age" type="number" />
         <InputField name="mark" control={control} label="Mark" type="number" />
         <SelectField
@@ -87,10 +95,16 @@ export default function StudentForm({
           label="City"
           options={cityOption}
         />
-
+        {error && <Alert severity="error">{error}</Alert>}
         <Box mt={3}>
-          <Button color="primary" variant="contained" type="submit">
-            Save
+          <Button
+            color="primary"
+            variant="contained"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && <CircularProgress size={16} color="primary" />}
+            &nbsp;Save
           </Button>
         </Box>
       </form>
